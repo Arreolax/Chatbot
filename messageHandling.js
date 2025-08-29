@@ -13,6 +13,8 @@ const {
 
 const { generateOrderPdf } = require("./pdfgenerator");
 
+const API_URL = process.env.PUBLIC_DB_URL; 
+
 // Aliases para mayor claridad
 const sendTemplateMessage = enviarPlantillaWhatsApp;
 const sendTextMessage = enviarMensajeTexto;
@@ -69,7 +71,7 @@ async function handleIncomingMessage(payload) {
       await enviarPlantillaMisce({
         from,
         templateName: "saludo_inicio",
-        url: `http://localhost/Store/APIs/store_name.php?type=store`,
+        url: `${API_URL}Store/APIs/store_name.php?type=store`,
       });
 
     } else {
@@ -84,7 +86,7 @@ async function handleIncomingMessage(payload) {
       await enviarPlantillaDesdeAPIIMAGEN({
         from,
         templateName: "category_desc",
-        url: "http://localhost/Store/APIs/category.php",
+        url: `${API_URL}Store/APIs/category.php`,
       });
 
     } else if (btnPayload.startsWith("btn_payload_") && btnText.toLowerCase() === ("show")) {
@@ -93,7 +95,7 @@ async function handleIncomingMessage(payload) {
       await enviarPlantillaDesdeAPIIMAGEN({
         from,
         templateName: "producto_desc",
-        url: `http://localhost/Store/APIs/products-categ.php?id_category=${categoryId}`,
+        url: `${API_URL}Store/APIs/products-categ.php?id_category=${categoryId}`,
       });
 
     } else if (btnPayload.startsWith("btn_payload_") && btnText.toLowerCase() === ("add to cart")) {
@@ -120,7 +122,7 @@ async function handleIncomingMessage(payload) {
           from,
           userId: userglobal[from].id,
           prodId,
-          url: `http://localhost/Store/APIs/cart-user.php`,
+          url: `${API_URL}Store/APIs/cart-user.php`,
         });
       }
 
@@ -135,7 +137,7 @@ async function handleIncomingMessage(payload) {
       await enviarPlantillaDesdeAPICart({
         from,
         templateName: "producto_cart_desc",
-        url: `http://localhost/Store/APIs/cart-user.php?id_user=${userIdd}`,
+        url: `${API_URL}Store/APIs/cart-user.php?id_user=${userIdd}`,
       });
 
     } else if (btnPayload.startsWith("btn_payload_") && btnText.toLowerCase() === ("delete of cart")) {
@@ -152,7 +154,7 @@ async function handleIncomingMessage(payload) {
         from,
         userId: userglobal[from].id,
         productId: id_product,
-        url: `http://localhost/Store/APIs/cart-user.php?id_user=${userglobal[from].id}&id_product=${id_product}`,
+        url: `${API_URL}Store/APIs/cart-user.php?id_user=${userglobal[from].id}&id_product=${id_product}`,
       });
 
     } else if (btnPayload.startsWith("btn_payload_") && btnText.toLowerCase() === ("choose")) {
@@ -211,7 +213,7 @@ async function handleIncomingMessage(payload) {
         cartTotal: totalGeneral,
         id_user: userId,
         id_method: id,
-        url: `http://localhost/Store/APIs/carts-user.php`,
+        url: `${API_URL}Store/APIs/carts-user.php`,
       });
 
     } else if (btnPayload === "cart") {
@@ -224,13 +226,13 @@ async function handleIncomingMessage(payload) {
       if (!userglobal[from]) {
         await verify_user({
           from,
-          url: `http://localhost/Store/APIs/user.php?phone=${from}`,
+          url: `${API_URL}Store/APIs/user.php?phone=${from}`,
         });
       } else {
         await enviarPlantillaMisce({
           from,
           templateName: "account",
-          url: `http://localhost/Store/APIs/user.php?phone=${from}`,
+          url: `${API_URL}Store/APIs/user.php?phone=${from}`,
         });
 
       }
@@ -239,7 +241,7 @@ async function handleIncomingMessage(payload) {
       await create_user({
         from,
         name,
-        url: `http://localhost/Store/APIs/user.php`,
+        url: `${API_URL}Store/APIs/user.php`,
       });
 
     } else if (btnPayload === "buy cart") {
@@ -259,7 +261,7 @@ async function handleIncomingMessage(payload) {
       await enviarPlantillaDesdeAPIIMAGEN({
         from,
         templateName: "method",
-        url: `http://localhost/Store/APIs/methods.php?type=method`,
+        url: `${API_URL}Store/APIs/methods.php?type=method`,
       });
 
     } else if (btnPayload === "yes") {
@@ -529,7 +531,7 @@ async function verify_user({ from, url }) {
       await enviarPlantillaMisce({
         from,
         templateName: "account",
-        url: `http://localhost/Store/APIs/user.php?phone=${from}`,
+        url: `${API_URL}Store/APIs/user.php?phone=${from}`,
       });
     }
 
@@ -576,7 +578,7 @@ async function create_user({ from, name, url }) {
     setTimeout(() => {
       verify_user({
         from,
-        url: `http://localhost/Store/APIs/user.php?phone=${from}`,
+        url: `${API_URL}Store/APIs/user.php?phone=${from}`,
       });
     }, 2000);
 
@@ -657,7 +659,7 @@ async function add_cart({ from, prodId, userId, url }) {
       enviarPlantillaDesdeAPIIMAGEN({
         from,
         templateName: "category_desc",
-        url: "http://localhost/Store/APIs/category.php",
+        url: "${API_URL}Store/APIs/category.php",
       });
     }, 1000);
 
@@ -669,7 +671,7 @@ async function add_cart({ from, prodId, userId, url }) {
 
 async function user_global(from) {
   try {
-    const response = await fetch(`http://localhost/Store/APIs/user.php?phone=${from}`);
+    const response = await fetch(`${API_URL}Store/APIs/user.php?phone=${from}`);
     if (!response.ok) throw new Error(`Status ${response.status}`);
 
     const data = await response.json();
@@ -688,7 +690,7 @@ async function user_global(from) {
 
 async function cart_global(userid) {
   try {
-    const response = await fetch(`http://localhost/Store/APIs/carts-user.php?id_user=${userid}`);
+    const response = await fetch(`${API_URL}Store/APIs/carts-user.php?id_user=${userid}`);
     if (!response.ok) throw new Error(`Status ${response.status}`);
 
     const data = await response.json();
@@ -707,7 +709,7 @@ async function cart_global(userid) {
 
 async function methods_global(id) {
   try {
-    const response = await fetch(`http://localhost/Store/APIs/pdf-method.php?type=method&id=${id}`);
+    const response = await fetch(`${API_URL}Store/APIs/pdf-method.php?type=method&id=${id}`);
     if (!response.ok) throw new Error(`Status ${response.status}`);
 
     const data = await response.json();
@@ -773,7 +775,7 @@ async function delete_prod_cart({ from, userId, productId, url }) {
         enviarPlantillaDesdeAPICart({
           from,
           templateName: "producto_cart_desc",
-          url: `http://localhost/Store/APIs/cart-user.php?id_user=${userId}`,
+          url: `${API_URL}Store/APIs/cart-user.php?id_user=${userId}`,
         });
       }, 2000);
 
