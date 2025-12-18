@@ -1,0 +1,56 @@
+CREATE TABLE users (
+	id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	username VARCHAR(100) NOT NULL,
+	phone VARCHAR(20) NOT NULL,
+	registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE products (
+    id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id_product CHAR(36) NOT NULL UNIQUE DEFAULT (UUID()),
+    name VARCHAR(100) CHARACTER SET utf32 COLLATE utf32_bin NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    stock INT(11) NOT NULL,
+    description TEXT CHARACTER SET utf32 COLLATE utf32_bin NULL,
+    image VARCHAR(1000) CHARACTER SET utf32 COLLATE utf32_bin NULL,
+    id_category INT(11) NOT NULL
+);
+
+
+CREATE TABLE category (
+	id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	name VARCHAR(100) NOT NULL,
+	description TEXT,
+	image VARCHAR(1000) DEFAULT 'https://praicon.com.mx/wp-content/uploads/2025/04/placeholder-2-1.png'
+);
+
+CREATE TABLE cart (
+	id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	id_user INT NOT NULL,
+	id_product INT NOT NULL
+);
+
+CREATE TABLE payments (
+	id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	id_user INT NOT NULL,
+	id_cart INT NOT NULL,
+	id_method INT NOT NULL,
+	payment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE miscellany (
+	id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	name VARCHAR(50) NOT NULL,
+	description VARCHAR(100) NULL,
+	type VARCHAR(20) NOT NULL,
+	image VARCHAR(1000) DEFAULT 'https://praicon.com.mx/wp-content/uploads/2025/04/placeholder-2-1.png'
+);
+
+ALTER TABLE products ADD FOREIGN KEY (id_category) REFERENCES category(id) ON DELETE CASCADE;
+
+ALTER TABLE payments ADD FOREIGN KEY (id_cart) REFERENCES cart(id) ON DELETE CASCADE;
+ALTER TABLE payments ADD FOREIGN KEY (id_user) REFERENCES users(id) ON DELETE CASCADE;
+ALTER TABLE payments ADD FOREIGN KEY (id_method) REFERENCES miscellany(id) ON DELETE CASCADE;
+
+ALTER TABLE cart ADD FOREIGN KEY (id_product) REFERENCES products(id) ON DELETE CASCADE;
+ALTER TABLE cart ADD FOREIGN KEY (id_user) REFERENCES users(id) ON DELETE CASCADE;
